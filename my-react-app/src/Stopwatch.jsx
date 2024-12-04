@@ -1,42 +1,43 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-function Stopwatch () {
+function Stopwatch() {
     const [isRunning, setIsRunning] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0);
     const intervalRef = useRef(null);
     const startTimeRef = useRef(0);
 
     useEffect(() => {
-        if(isRunning){
-            setInterval(() => {
+        if (isRunning) {
+            intervalRef.current = setInterval(() => {
                 setElapsedTime(Date.now() - startTimeRef.current);
             }, 10);
         }
 
         return () => {
-            clearInterval(intervalRef.current)
-        }
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        };
     }, [isRunning]);
 
-    function start(){
+    function start() {
         setIsRunning(true);
         startTimeRef.current = Date.now() - elapsedTime;
-        console.log(startTimeRef.current)
     }
 
-    function stop(){
+    function stop() {
         setIsRunning(false);
     }
 
-    function reset(){
+    function reset() {
         setElapsedTime(0);
         setIsRunning(false);
+        startTimeRef.current = 0;
     }
 
-    function formatTime(){
+    function formatTime() {
         let hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-        let minutes = Math.floor(elapsedTime / (1000 * 60) % 60);
-        let seconds = Math.floor(elapsedTime / (1000) % 60);
+        let minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+        let seconds = Math.floor((elapsedTime / 1000) % 60);
         let milliseconds = Math.floor((elapsedTime % 1000) / 10);
 
         hours = String(hours).padStart(2, "0");
@@ -47,15 +48,15 @@ function Stopwatch () {
         return `${hours}:${minutes}:${seconds}:${milliseconds}`;
     }
 
-    return(
-    <div className="stopwatch">
-        <div className="display">{formatTime()}</div>
-        <div className="controls">
-            <button onClick={start()} className="start-button">Start</button>
-            <button onClick={stop()} className="stop-button">Stop</button>
-            <button onClick={reset()} className="reset-button">Reset</button>
+    return (
+        <div className="stopwatch">
+            <div className="display">{formatTime()}</div>
+            <div className="controls">
+                <button onClick={start} className="start-button">Start</button>
+                <button onClick={stop} className="stop-button">Stop</button>
+                <button onClick={reset} className="reset-button">Reset</button>
+            </div>
         </div>
-    </div>
     );
 }
 
